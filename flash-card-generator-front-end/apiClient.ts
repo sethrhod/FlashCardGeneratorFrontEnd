@@ -21,8 +21,8 @@ export class Client {
     /**
      * @return OK
      */
-    getTestDeck(): Promise<OkObjectResult> {
-        let url_ = this.baseUrl + "/Deck/GetTestDeck";
+    getTestDecks(): Promise<OkObjectResult> {
+        let url_ = this.baseUrl + "/Deck/GetTestDecks";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -33,11 +33,11 @@ export class Client {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetTestDeck(_response);
+            return this.processGetTestDecks(_response);
         });
     }
 
-    protected processGetTestDeck(response: Response): Promise<OkObjectResult> {
+    protected processGetTestDecks(response: Response): Promise<OkObjectResult> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {

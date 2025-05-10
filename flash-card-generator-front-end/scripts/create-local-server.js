@@ -14,8 +14,8 @@ app
   .then(() => {
     const server = createHttpsServer(
       {
-        key: fs.readFileSync('./localhost-key.pem'), // Path to your private key
-        cert: fs.readFileSync('./localhost.pem'),    // Path to your certificate
+        key: fs.readFileSync('certs/localhost-key.pem'), // Path to your private key
+        cert: fs.readFileSync('certs/localhost.pem'),    // Path to your certificate
       },
       (req, res) => handle(req, res)
     );
