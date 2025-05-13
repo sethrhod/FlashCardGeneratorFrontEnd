@@ -1,5 +1,5 @@
 'use client'
-import { IFlashCard } from "@/apiClient";
+import { IFlashCard } from "@/models/apiClient";
 
 type CardProps = {
   card: IFlashCard;

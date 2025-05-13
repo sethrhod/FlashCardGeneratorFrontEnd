@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
-import { IFlashCard } from "@/apiClient";
+import { IFlashCard } from "@/models/apiClient";
 import Card from "@/components/flashCard";
-import useDeckStore from "@/store";
+import useDeckStore from "@/models/store";
 
 export default function DeckItem() {
   const { selectedDeck } = useDeckStore();

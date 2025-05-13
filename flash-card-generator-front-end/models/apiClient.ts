@@ -1815,6 +1815,9 @@ export class Deck implements IDeck {
     id!: string | undefined;
     name!: string | undefined;
     userId!: string | undefined;
+    originalLanguage!: Language;
+    targetLanguage!: Language;
+    level!: LanguageLevel;
     flashCards!: FlashCard[] | undefined;
 
     constructor(data?: IDeck) {
@@ -1824,6 +1827,10 @@ export class Deck implements IDeck {
                     (<any>this)[property] = (<any>data)[property];
             }
         }
+        if (!data) {
+            this.originalLanguage = new Language();
+            this.targetLanguage = new Language();
+        }
     }
 
     init(_data?: any) {
@@ -1831,6 +1838,9 @@ export class Deck implements IDeck {
             this.id = _data["id"];
             this.name = _data["name"];
             this.userId = _data["userId"];
+            this.originalLanguage = _data["originalLanguage"] ? Language.fromJS(_data["originalLanguage"]) : new Language();
+            this.targetLanguage = _data["targetLanguage"] ? Language.fromJS(_data["targetLanguage"]) : new Language();
+            this.level = _data["level"];
             if (Array.isArray(_data["flashCards"])) {
                 this.flashCards = [] as any;
                 for (let item of _data["flashCards"])
@@ -1851,6 +1861,9 @@ export class Deck implements IDeck {
         data["id"] = this.id;
         data["name"] = this.name;
         data["userId"] = this.userId;
+        data["originalLanguage"] = this.originalLanguage ? this.originalLanguage.toJSON() : <any>undefined;
+        data["targetLanguage"] = this.targetLanguage ? this.targetLanguage.toJSON() : <any>undefined;
+        data["level"] = this.level;
         if (Array.isArray(this.flashCards)) {
             data["flashCards"] = [];
             for (let item of this.flashCards)
@@ -1864,6 +1877,9 @@ export interface IDeck {
     id: string | undefined;
     name: string | undefined;
     userId: string | undefined;
+    originalLanguage: Language;
+    targetLanguage: Language;
+    level: LanguageLevel;
     flashCards: FlashCard[] | undefined;
 }
 

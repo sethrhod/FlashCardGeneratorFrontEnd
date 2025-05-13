@@ -1,42 +1,66 @@
 'use client';
-import React, { useEffect } from 'react';
-import { IDeck } from '../../apiClient'
-import useDeckStore from "@/store";
+import React, { useEffect, useState } from 'react';
+import { IDeck } from '../../models/apiClient'
+import useDeckStore from "@/models/store";
 import { useRouter } from 'next/navigation';
+import {useSideBarContext} from "@/models/Contexts";
 
-export default function DecksList({
+export default function MyDecks({
   decks,
 }: {
   decks: IDeck[];
 }) {
-  const { setDecks, setSelectedDeck } = useDeckStore();
+  const { setDecks, setSelectedDeck, Decks } = useDeckStore();
   const router = useRouter();
+  const sidebarContext = useSideBarContext();
+  const [filteredDecks, setFilteredDecks] = useState<IDeck[] | null>(null);
 
   useEffect(() => {
     setDecks(decks);
   }
   , [decks]);
 
+  useEffect(() => {
+    if (sidebarContext.filterOptions.Language) {
+      setFilteredDecks((filteredDecks || []).concat(Decks.filter((deck) => deck.targetLanguage == sidebarContext.filterOptions.Language)));
+    }
+    if (sidebarContext.filterOptions.LanguageLevel !== null && sidebarContext.filterOptions.LanguageLevel !== undefined) {
+      setFilteredDecks((filteredDecks || []).concat(Decks.filter((deck) => deck.level == sidebarContext.filterOptions.LanguageLevel)));
+    }
+    if (sidebarContext.filterOptions.LanguageLevel === null && sidebarContext.filterOptions.Language === null) {
+      setFilteredDecks(null);
+    }
+  }, [sidebarContext]);
+
   const handleDeckClick = (deck: IDeck) => {
     setSelectedDeck(deck);
     router.push(`/decks/${deck.id}`);
   }
 
+  const deckItem = (deck: IDeck) => {
+    return (
+      <li
+        key={deck.id}
+        className="flex space-x-6 items-center justify-center p-4 mb-4 border-b-4 border-b-gray-800 shadow-md rounded-lg text-gray-100 hover:bg-gray-800"
+        onClick={() => handleDeckClick(deck)}
+      >
+        <p>{deck.name}</p>
+        <p>{deck.originalLanguage.textCode}</p>
+        <p>{deck.targetLanguage.textCode}</p>
+        <p>{deck.level}</p>
+      </li>
+    );
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <div className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        {
-          decks.map((deck) => (
-            <button
-              key={deck.id}
-              className="flex flex-col items-center w-full justify-between p-4 bg-white shadow-md rounded-lg text-black"
-              onClick={() => handleDeckClick(deck)}
-            >
-              <p>{deck.name}</p>
-            </button>
+    <ul className="flex flex-col p-4 bg-gray-900">
+      {filteredDecks !== null
+        ? filteredDecks.map((deck) => (
+            deckItem(deck)
           ))
-        }
-      </div>
-    </div>
+        : Decks.map((deck) => (
+            deckItem(deck)
+          ))}
+    </ul>
   );
 }
