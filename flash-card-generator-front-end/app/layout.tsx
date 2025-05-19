@@ -1,52 +1,46 @@
-'use client';
-import {SideBarContext} from "@/models/Contexts";
 import "./globals.css";
-import Sidebar from "@/components/sidebar";
-import { useState } from "react";
-import { SidebarState } from "@/models/sidebarState";
-import FilterOptions from "@/models/filterOptions";
-import DeckOptions from "@/models/deckOptions";
+import { Client } from "@/models/apiClient";
+import nodeFetch from 'node-fetch';
+import ClientRootLayout from "./clientRootLayout";
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  var initialState: SidebarState = {
-    filterOptions: new FilterOptions(),
-    setFilterOptions: (opts: FilterOptions) => {},
-    deckOptions: new DeckOptions(),
-    setDeckOptions: (opts: DeckOptions) => {},
-  };
-  
-  const [sidebarState, setSidebarState] = useState(initialState);
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const api = new Client('https://localhost:7017', { fetch: nodeFetch as any });
+
+  const availableLanguagesResponse = await api.getAvailableLanguages();
+
+  if (availableLanguagesResponse.isFailed) {
+    console.error("Error fetching available languages:", availableLanguagesResponse.errors);
+    return <div>Error loading languages</div>;
+  }
+  if (availableLanguagesResponse.value == null || availableLanguagesResponse.value.length === 0) {
+    console.error("No available languages found");
+    return <div>No languages available</div>;
+  }
+
+  const testDeckResponse = await api.getDecks();
+
+  if (testDeckResponse.isFailed) {
+    console.error("Error fetching test decks:", testDeckResponse.errors);
+    return <div>Error loading decks</div>;
+  }
+  if (testDeckResponse.value == null || testDeckResponse.value.length === 0) {
+    console.error("No test decks found");
+    return <div>No decks available</div>;
+  }
+
+    // Convert class instances to plain objects before passing to client components
+  const plainDecks = JSON.parse(JSON.stringify(testDeckResponse.value));
+  const plainLanguages = JSON.parse(JSON.stringify(availableLanguagesResponse.value));
 
   return (
     <html lang="en">
       <body className="flex">
-        <SideBarContext.Provider value={{
-          ...sidebarState,
-          setFilterOptions: (opts: FilterOptions) => {
-            setSidebarState((prevState) => ({
-              ...prevState,
-              filterOptions: opts,
-            }));
-          },
-          setDeckOptions: (opts: DeckOptions) => {
-            setSidebarState((prevState) => ({
-              ...prevState,
-              deckOptions: opts,
-            }));
-          },
-        }}>
-          <Sidebar />
-          <main className="flex flex-col w-full min-h-screen bg-gray-900">
-            <header id="header" className="flex w-full items-center bg-gray-800 shadow-md p-4 border-l-4 border-l-gray-900">
-              <h1 className="text-2xl font-bold">Current Route</h1>
-            </header>
-            {children}
-          </main>
-        </SideBarContext.Provider>
+        <ClientRootLayout
+          decks={plainDecks}
+          availableLanguages={plainLanguages}
+        >
+          {children}
+        </ClientRootLayout>
       </body>
     </html>
   );
