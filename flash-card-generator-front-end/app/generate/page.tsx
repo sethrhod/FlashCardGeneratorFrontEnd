@@ -17,6 +17,7 @@ export default function Generate() {
     useEffect(() => {
       sidebarState.setDeckOptionsVisible(false);
       sidebarState.setFilterOptionsVisible(false);
+      sidebarState.setHeader("Generate Deck");
     }, []);
   
     return (

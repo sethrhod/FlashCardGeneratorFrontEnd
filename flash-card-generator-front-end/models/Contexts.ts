@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react";
-import {SidebarState} from "./sidebarState";
+import { SidebarState } from "./SidebarState";
 import { Language } from "./apiClient";
+import { DecksState } from "./DecksState";
 
 export const SideBarContext = createContext<SidebarState | undefined>(undefined);
 
@@ -12,12 +13,22 @@ export function useSideBarContext() {
   return context;
 }
 
-export const LanguagesContext = createContext<Language[] | undefined>(undefined);
+export const LanguagesContext = createContext<{[key: string] : Language} | undefined>(undefined);
 
 export function useLanguagesContext() {
   const context = useContext(LanguagesContext);
   if (context === undefined) {
     throw new Error("useLanguagesContext must be used within a LanguagesState");
+  }
+  return context;
+}
+
+export const DecksContext = createContext<DecksState | undefined>(undefined);
+
+export function useDecksContext() {
+  const context = useContext(DecksContext);
+  if (context === undefined) {
+    throw new Error("useDecksContext must be used within a DecksState");
   }
   return context;
 }

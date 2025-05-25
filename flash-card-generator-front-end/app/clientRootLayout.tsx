@@ -1,12 +1,17 @@
-'use client';
-import { useEffect, useState } from "react";
-import { SideBarContext, LanguagesContext } from "@/models/Contexts";
+"use client";
+import { useState } from "react";
+import {
+  SideBarContext,
+  LanguagesContext,
+  DecksContext,
+} from "@/models/Contexts";
 import Sidebar from "@/components/sidebar";
-import { SidebarState } from "@/models/sidebarState";
-import FilterOptions from "@/models/filterOptions";
-import DeckOptions from "@/models/deckOptions";
-import useDeckStore from "@/models/store";
-import { Language, IDeck, Deck } from "@/models/apiClient";
+import { Language, Deck, IDeck } from "@/models/apiClient";
+import { SidebarState } from "@/models/SidebarState";
+import { DecksState } from "@/models/DecksState";
+import User from "@/models/User";
+import FilterOptions from "@/models/FilterOptions";
+import DeckOptions from "@/models/DeckOptions";
 
 export default function ClientRootLayout({
   children,
@@ -15,50 +20,89 @@ export default function ClientRootLayout({
 }: {
   children: React.ReactNode;
   decks: Deck[];
-  availableLanguages: Language[];
+  availableLanguages: { [key: string]: Language };
 }) {
-  const { setDecks } = useDeckStore();
-
-  useEffect(() => {
-    setDecks(decks);
-  }, [decks]);
-
   const [sidebarState, setSidebarState] = useState<SidebarState>({
     filterOptions: new FilterOptions(),
-    setFilterOptions: () => {},
+    setFilterOptions: (opts: FilterOptions) => {
+      setSidebarState((prevState) => ({
+        ...prevState,
+        filterOptions: opts,
+      }));
+    },
     filterOptionsVisible: false,
     setFilterOptionsVisible: () => {},
     deckOptions: new DeckOptions(),
-    setDeckOptions: () => {},
+    setDeckOptions: (opts: DeckOptions) => {
+      setSidebarState((prevState) => ({
+        ...prevState,
+        deckOptions: opts,
+      }));
+    },
     deckOptionsVisible: false,
     setDeckOptionsVisible: () => {},
+    header: null,
+    setHeader: (header: string) => {
+      setSidebarState((prevState) => ({
+        ...prevState,
+        header,
+      }));
+    },
+    user: null,
+    setUser: (user: User | null) => {
+      setSidebarState((prevState) => ({
+        ...prevState,
+        user,
+      }));
+    },
+    Error: null,
+    setError: (error: string | null) => {
+      setSidebarState((prevState) => ({
+        ...prevState,
+        Error: error,
+      }));
+    },
+  });
+
+  const [decksState, setDecksState] = useState<DecksState>({
+    Decks: decks,
+    selectedDeck: null,
+    setDecks: (items: IDeck[]) => {
+      setDecksState((prevState) => ({
+        ...prevState,
+        Decks: items,
+      }));
+    },
+    setSelectedDeck: (item: IDeck) => {
+      setDecksState((prevState) => ({
+        ...prevState,
+        selectedDeck: item,
+      }));
+    },
   });
 
   return (
-    <SideBarContext.Provider value={{
-      ...sidebarState,
-      setFilterOptions: (opts: FilterOptions) => {
-        setSidebarState((prevState) => ({
-          ...prevState,
-          filterOptions: opts,
-        }));
-      },
-      setDeckOptions: (opts: DeckOptions) => {
-        setSidebarState((prevState) => ({
-          ...prevState,
-          deckOptions: opts,
-        }));
-      },
-    }}>
-      <LanguagesContext.Provider value={availableLanguages}>
-        <Sidebar />
-        <main className="flex flex-col w-full min-h-screen bg-gray-900">
-          <header id="header" className="flex w-full items-center bg-gray-800 shadow-md p-4 border-l-4 border-l-gray-900">
-            <h1 className="text-2xl font-bold">Current Route</h1>
-          </header>
-          {children}
-        </main>
-      </LanguagesContext.Provider>
-    </SideBarContext.Provider>
+    <>
+      <SideBarContext.Provider value={{ ...sidebarState }}>
+        <LanguagesContext.Provider value={availableLanguages}>
+          <DecksContext.Provider value={{ ...decksState }}>
+            <Sidebar />
+            <main className="flex flex-col w-full h-screen bg-gray-900">
+              <div className="flex-1 p-4 bg-gray-800">
+                {sidebarState.Error && (
+                  <div className="text-red-500 text-center">
+                    {sidebarState.Error}
+                  </div>
+                )}
+                <h1 className="text-2xl self-center text-center text-blue-300 font-black leading-8">
+                  {sidebarState.header || "Welcome to the Language Learning App"}
+                </h1>
+              </div>
+              {children}
+            </main>
+          </DecksContext.Provider>
+        </LanguagesContext.Provider>
+      </SideBarContext.Provider>
+    </>
   );
 }
