@@ -16,7 +16,7 @@ export default function DeckItem() {
   , []);
 
    return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center overflow-scroll">
       <ul className="flex flex-col items-center w-full mt-4">
         {deckContext.selectedDeck?.flashCards && deckContext.selectedDeck.flashCards.map((card: IFlashCard) => (
           <li key={card.id} className="mb-4 w-full h-full flex justify-center">

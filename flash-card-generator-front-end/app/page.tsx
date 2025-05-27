@@ -1,16 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { IDeck } from "../models/apiClient";
+import React, { useActionState, useEffect, useState } from "react";
+import { IDeck, Client } from "../models/apiClient";
 import { useRouter } from "next/navigation";
 import { useDecksContext, useSideBarContext } from "@/models/Contexts";
 import DisplayLevel from "@/scripts/language-level-converter";
 import FindLanguageName from "@/scripts/language-name-finder";
+import { handleGetDecks } from "./actions/handleGetDecks";
 
 export default function Home() {
   const router = useRouter();
   const sidebarContext = useSideBarContext();
   const deckContext = useDecksContext();
-  const [filteredDecks, setFilteredDecks] = useState<IDeck[] | null>(null);
+  const [filteredDecks, setFilteredDecks] = useState<IDeck[] | null>(null);  
 
   useEffect(() => {
     sidebarContext.setDeckOptionsVisible(false);
@@ -24,7 +25,8 @@ export default function Home() {
         (filteredDecks || []).concat(
           deckContext.Decks.filter(
             (deck) =>
-              deck.targetLanguage == sidebarContext.filterOptions.Language
+              deck.targetLanguage ==
+              sidebarContext.filterOptions.Language?.enumCode
           )
         )
       );
@@ -79,11 +81,11 @@ export default function Home() {
         <DeckInfo label="Name" value={deck.name} />
         <DeckInfo
           label="Original Language"
-          value={FindLanguageName(deck.originalLanguage.textCode)}
+          value={FindLanguageName(deck.originalLanguage)}
         />
         <DeckInfo
           label="Target Language"
-          value={FindLanguageName(deck.targetLanguage.textCode)}
+          value={FindLanguageName(deck.targetLanguage)}
         />
         <DeckInfo label="Level" value={DisplayLevel(deck.level)} />
       </li>

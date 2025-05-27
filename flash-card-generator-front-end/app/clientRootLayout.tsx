@@ -88,14 +88,14 @@ export default function ClientRootLayout({
           <DecksContext.Provider value={{ ...decksState }}>
             <Sidebar />
             <main className="flex flex-col w-full h-screen bg-gray-900">
-              <div className="flex-1 p-4 bg-gray-800">
+              <div className="p-4 bg-gray-800 shadow-md z-10">
                 {sidebarState.Error && (
                   <div className="text-red-500 text-center">
                     {sidebarState.Error}
                   </div>
                 )}
                 <h1 className="text-2xl self-center text-center text-blue-300 font-black leading-8">
-                  {sidebarState.header || "Welcome to the Language Learning App"}
+                  {sidebarState.header || "loading..."}
                 </h1>
               </div>
               {children}

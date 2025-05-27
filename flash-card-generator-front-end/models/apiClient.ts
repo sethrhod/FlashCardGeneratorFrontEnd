@@ -879,8 +879,9 @@ export interface IAccessTokenResponse {
 }
 
 export class BackView implements IBackView {
+    id!: string | undefined;
     text!: string | undefined;
-    language!: Language;
+    language!: LanguageCode;
     region?: string | undefined;
 
     constructor(data?: IBackView) {
@@ -890,15 +891,13 @@ export class BackView implements IBackView {
                     (<any>this)[property] = (<any>data)[property];
             }
         }
-        if (!data) {
-            this.language = new Language();
-        }
     }
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.text = _data["text"];
-            this.language = _data["language"] ? Language.fromJS(_data["language"]) : new Language();
+            this.language = _data["language"];
             this.region = _data["region"];
         }
     }
@@ -912,16 +911,18 @@ export class BackView implements IBackView {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["text"] = this.text;
-        data["language"] = this.language ? this.language.toJSON() : <any>undefined;
+        data["language"] = this.language;
         data["region"] = this.region;
         return data;
     }
 }
 
 export interface IBackView {
+    id: string | undefined;
     text: string | undefined;
-    language: Language;
+    language: LanguageCode;
     region?: string | undefined;
 }
 
@@ -1012,11 +1013,11 @@ export interface IBooleanResult {
 export class Deck implements IDeck {
     id!: string | undefined;
     name!: string | undefined;
-    userId!: string | undefined;
-    originalLanguage!: Language;
-    targetLanguage!: Language;
+    originalLanguage!: LanguageCode;
+    targetLanguage!: LanguageCode;
     level!: LanguageLevel;
     flashCards!: FlashCard[] | undefined;
+    user!: IdentityUser;
 
     constructor(data?: IDeck) {
         if (data) {
@@ -1026,8 +1027,7 @@ export class Deck implements IDeck {
             }
         }
         if (!data) {
-            this.originalLanguage = new Language();
-            this.targetLanguage = new Language();
+            this.user = new IdentityUser();
         }
     }
 
@@ -1035,15 +1035,15 @@ export class Deck implements IDeck {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
-            this.userId = _data["userId"];
-            this.originalLanguage = _data["originalLanguage"] ? Language.fromJS(_data["originalLanguage"]) : new Language();
-            this.targetLanguage = _data["targetLanguage"] ? Language.fromJS(_data["targetLanguage"]) : new Language();
+            this.originalLanguage = _data["originalLanguage"];
+            this.targetLanguage = _data["targetLanguage"];
             this.level = _data["level"];
             if (Array.isArray(_data["flashCards"])) {
                 this.flashCards = [] as any;
                 for (let item of _data["flashCards"])
                     this.flashCards!.push(FlashCard.fromJS(item));
             }
+            this.user = _data["user"] ? IdentityUser.fromJS(_data["user"]) : new IdentityUser();
         }
     }
 
@@ -1058,15 +1058,15 @@ export class Deck implements IDeck {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
-        data["userId"] = this.userId;
-        data["originalLanguage"] = this.originalLanguage ? this.originalLanguage.toJSON() : <any>undefined;
-        data["targetLanguage"] = this.targetLanguage ? this.targetLanguage.toJSON() : <any>undefined;
+        data["originalLanguage"] = this.originalLanguage;
+        data["targetLanguage"] = this.targetLanguage;
         data["level"] = this.level;
         if (Array.isArray(this.flashCards)) {
             data["flashCards"] = [];
             for (let item of this.flashCards)
                 data["flashCards"].push(item ? item.toJSON() : <any>undefined);
         }
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -1074,11 +1074,11 @@ export class Deck implements IDeck {
 export interface IDeck {
     id: string | undefined;
     name: string | undefined;
-    userId: string | undefined;
-    originalLanguage: Language;
-    targetLanguage: Language;
+    originalLanguage: LanguageCode;
+    targetLanguage: LanguageCode;
     level: LanguageLevel;
     flashCards: FlashCard[] | undefined;
+    user: IdentityUser;
 }
 
 export class DeckIEnumerableResult implements IDeckIEnumerableResult {
@@ -1362,8 +1362,9 @@ export interface IForgotPasswordRequest {
 }
 
 export class FrontView implements IFrontView {
+    id!: string | undefined;
     text!: string | undefined;
-    language!: Language;
+    language!: LanguageCode;
     region?: string | undefined;
 
     constructor(data?: IFrontView) {
@@ -1373,15 +1374,13 @@ export class FrontView implements IFrontView {
                     (<any>this)[property] = (<any>data)[property];
             }
         }
-        if (!data) {
-            this.language = new Language();
-        }
     }
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
             this.text = _data["text"];
-            this.language = _data["language"] ? Language.fromJS(_data["language"]) : new Language();
+            this.language = _data["language"];
             this.region = _data["region"];
         }
     }
@@ -1395,16 +1394,18 @@ export class FrontView implements IFrontView {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["text"] = this.text;
-        data["language"] = this.language ? this.language.toJSON() : <any>undefined;
+        data["language"] = this.language;
         data["region"] = this.region;
         return data;
     }
 }
 
 export interface IFrontView {
+    id: string | undefined;
     text: string | undefined;
-    language: Language;
+    language: LanguageCode;
     region?: string | undefined;
 }
 
@@ -1710,6 +1711,98 @@ export class ISuccess implements IISuccess {
 export interface IISuccess {
     message?: string | undefined;
     metadata?: { [key: string]: any; } | undefined;
+}
+
+export class IdentityUser implements IIdentityUser {
+    id?: string | undefined;
+    userName?: string | undefined;
+    normalizedUserName?: string | undefined;
+    email?: string | undefined;
+    normalizedEmail?: string | undefined;
+    emailConfirmed?: boolean;
+    passwordHash?: string | undefined;
+    securityStamp?: string | undefined;
+    concurrencyStamp?: string | undefined;
+    phoneNumber?: string | undefined;
+    phoneNumberConfirmed?: boolean;
+    twoFactorEnabled?: boolean;
+    lockoutEnd?: Date | undefined;
+    lockoutEnabled?: boolean;
+    accessFailedCount?: number;
+
+    constructor(data?: IIdentityUser) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.userName = _data["userName"];
+            this.normalizedUserName = _data["normalizedUserName"];
+            this.email = _data["email"];
+            this.normalizedEmail = _data["normalizedEmail"];
+            this.emailConfirmed = _data["emailConfirmed"];
+            this.passwordHash = _data["passwordHash"];
+            this.securityStamp = _data["securityStamp"];
+            this.concurrencyStamp = _data["concurrencyStamp"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.phoneNumberConfirmed = _data["phoneNumberConfirmed"];
+            this.twoFactorEnabled = _data["twoFactorEnabled"];
+            this.lockoutEnd = _data["lockoutEnd"] ? new Date(_data["lockoutEnd"].toString()) : <any>undefined;
+            this.lockoutEnabled = _data["lockoutEnabled"];
+            this.accessFailedCount = _data["accessFailedCount"];
+        }
+    }
+
+    static fromJS(data: any): IdentityUser {
+        data = typeof data === 'object' ? data : {};
+        let result = new IdentityUser();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["userName"] = this.userName;
+        data["normalizedUserName"] = this.normalizedUserName;
+        data["email"] = this.email;
+        data["normalizedEmail"] = this.normalizedEmail;
+        data["emailConfirmed"] = this.emailConfirmed;
+        data["passwordHash"] = this.passwordHash;
+        data["securityStamp"] = this.securityStamp;
+        data["concurrencyStamp"] = this.concurrencyStamp;
+        data["phoneNumber"] = this.phoneNumber;
+        data["phoneNumberConfirmed"] = this.phoneNumberConfirmed;
+        data["twoFactorEnabled"] = this.twoFactorEnabled;
+        data["lockoutEnd"] = this.lockoutEnd ? this.lockoutEnd.toISOString() : <any>undefined;
+        data["lockoutEnabled"] = this.lockoutEnabled;
+        data["accessFailedCount"] = this.accessFailedCount;
+        return data;
+    }
+}
+
+export interface IIdentityUser {
+    id?: string | undefined;
+    userName?: string | undefined;
+    normalizedUserName?: string | undefined;
+    email?: string | undefined;
+    normalizedEmail?: string | undefined;
+    emailConfirmed?: boolean;
+    passwordHash?: string | undefined;
+    securityStamp?: string | undefined;
+    concurrencyStamp?: string | undefined;
+    phoneNumber?: string | undefined;
+    phoneNumberConfirmed?: boolean;
+    twoFactorEnabled?: boolean;
+    lockoutEnd?: Date | undefined;
+    lockoutEnabled?: boolean;
+    accessFailedCount?: number;
 }
 
 export class InfoRequest implements IInfoRequest {
