@@ -45,5 +45,3 @@ certs/
 .env.local
 localhost.pem
 localhost-key.pem
-
-secrets.json

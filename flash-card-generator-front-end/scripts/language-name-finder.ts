@@ -1,4 +1,4 @@
-import { LanguageCode } from "@/models/apiClient";
+import { LanguageCode } from "@/lib/apiClient";
 import { useLanguagesContext } from "@/models/Contexts";
 
 export default function FindLanguageName(languageEnumCode: LanguageCode | undefined): string {

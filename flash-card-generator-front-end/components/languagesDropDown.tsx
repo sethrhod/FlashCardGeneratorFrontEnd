@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Language } from "@/models/apiClient";
+import { Language } from "@/lib/apiClient";
 
 interface DropdownProps {
   languages: {[key : string]: Language};

@@ -1,6 +1,6 @@
 'use server';
-import { GenerationRequestDTO, LanguageLevel } from "@/models/apiClient";
-import { Client } from "@/models/apiClient";
+import { GenerationRequestDTO, LanguageLevel } from "@/lib/apiClient";
+import { Client } from "@/lib/apiClient";
 import nodeFetch from 'node-fetch';
 import { redirect } from 'next/navigation'
 

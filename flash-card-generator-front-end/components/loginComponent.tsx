@@ -1,6 +1,5 @@
 import { useSideBarContext } from "@/models/Contexts";
-import handleThirdPartyLoginResponse from "@/scripts/handle-third-party-login-response";
-import { GoogleLogin } from "@react-oauth/google";
+import GoogleSignInButton from "./GoogleSignInButton";
 
 export default function LoginComponent() {
   const sidebarContext = useSideBarContext();
@@ -15,18 +14,7 @@ export default function LoginComponent() {
       ) : (
         <div className="flex flex-col items-center space-y-4">
           <p>Please log in to access your account.</p>
-          <GoogleLogin
-            onSuccess={(credentialResponse) => {
-              handleThirdPartyLoginResponse(
-                credentialResponse,
-                sidebarContext.setUser,
-                sidebarContext.setError
-              );
-            }}
-            onError={() => {
-              sidebarContext.setError("Failed to log in with Google.");
-            }}
-          />
+          <GoogleSignInButton />
         </div>
       )}
       {sidebarContext.Error && <>{sidebarContext.Error}</>}

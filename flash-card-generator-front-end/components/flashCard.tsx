@@ -1,5 +1,5 @@
 "use client";
-import { IBackView, IFlashCard, IFrontView } from "@/models/apiClient";
+import { IBackView, IFlashCard, IFrontView } from "@/lib/apiClient";
 import LanguageLevelConverter from "@/scripts/language-level-converter";
 import FindLanguageName from "@/scripts/language-name-finder";
 import { useState } from "react";

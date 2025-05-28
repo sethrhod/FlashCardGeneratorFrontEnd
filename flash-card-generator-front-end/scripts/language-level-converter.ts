@@ -1,4 +1,4 @@
-import { LanguageLevel } from "@/models/apiClient";
+import { LanguageLevel } from "@/lib/apiClient";
 
   export default function LanguageLevelConverter(level: LanguageLevel) {
     switch (level) {

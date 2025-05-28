@@ -1,25 +1,18 @@
-import { Client, IError } from "@/models/apiClient";
+import { Client, IError } from "@/lib/apiClient";
 import Result from "@/models/Result";
 
-
 export async function handleGetDecks(api: Client) {
-  try {
-    const response = await api.getDecks();
+  const response = await api.getDecks();
 
-    if (response.isFailed) {
-      console.error("Error fetching decks:", response.errors);
-      return { success: false, errors: response.errors, message: "Failed to fetch decks" };
-    }
-    
-    if (!response.value || Object.keys(response.value).length === 0) {
-      console.warn("No decks found");
-      return { success: false, message: "No decks available", errors: undefined };
-    }
-
-    // Convert class instances to plain objects
-    const decks = JSON.parse(JSON.stringify(response.value));
-    return decks;  
-  } catch (error) {
-    return { success: false, message: "An error occurred while fetching decks", errors: error instanceof IError ? [error] : undefined };
+  if (response.isFailed) {
+    throw new Error(`Error fetching decks: ${response.errors?.map((e: IError) => e.message).join(", ")}`);
   }
+
+  if (!response.value || Object.keys(response.value).length === 0) {
+    throw new Error("No decks available");
+  }
+
+  // Convert class instances to plain objects
+  const decks = JSON.parse(JSON.stringify(response.value));
+  return decks;
 }

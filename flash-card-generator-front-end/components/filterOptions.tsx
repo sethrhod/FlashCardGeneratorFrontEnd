@@ -1,4 +1,4 @@
-import { LanguageLevel } from "@/models/apiClient";
+import { LanguageLevel } from "@/lib/apiClient";
 import { useSideBarContext } from "@/models/Contexts";
 import DisplayLevel from "@/scripts/language-level-converter";
 import { ChevronDown } from "lucide-react";

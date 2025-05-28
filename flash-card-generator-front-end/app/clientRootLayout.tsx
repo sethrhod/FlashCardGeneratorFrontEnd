@@ -1,26 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   SideBarContext,
   LanguagesContext,
   DecksContext,
 } from "@/models/Contexts";
 import Sidebar from "@/components/sidebar";
-import { Language, Deck, IDeck } from "@/models/apiClient";
+import { Deck, Language, IDeck } from "@/lib/apiClient";
 import { SidebarState } from "@/models/SidebarState";
 import { DecksState } from "@/models/DecksState";
 import User from "@/models/User";
 import FilterOptions from "@/models/FilterOptions";
 import DeckOptions from "@/models/DeckOptions";
+import { AvailableLanguagesState } from "@/models/AvailableLanguagesState";
 
 export default function ClientRootLayout({
   children,
-  decks,
-  availableLanguages,
 }: {
   children: React.ReactNode;
-  decks: Deck[];
-  availableLanguages: { [key: string]: Language };
 }) {
   const [sidebarState, setSidebarState] = useState<SidebarState>({
     filterOptions: new FilterOptions(),
@@ -65,7 +62,7 @@ export default function ClientRootLayout({
   });
 
   const [decksState, setDecksState] = useState<DecksState>({
-    Decks: decks,
+    Decks: [],
     selectedDeck: null,
     setDecks: (items: IDeck[]) => {
       setDecksState((prevState) => ({
@@ -81,10 +78,21 @@ export default function ClientRootLayout({
     },
   });
 
+  const [availableLanguages, setAvailableLanguages] = useState<AvailableLanguagesState>({
+    availableLanguages: {},
+    setAvailableLanguages: (languages: { [key: string]: Language }) => {
+      setAvailableLanguages((prevState) => ({
+        ...prevState,
+        availableLanguages: languages,
+      }));
+    },
+  });
+
+
   return (
     <>
       <SideBarContext.Provider value={{ ...sidebarState }}>
-        <LanguagesContext.Provider value={availableLanguages}>
+        <LanguagesContext.Provider value={{ ...availableLanguages }}>
           <DecksContext.Provider value={{ ...decksState }}>
             <Sidebar />
             <main className="flex flex-col w-full h-screen bg-gray-900">

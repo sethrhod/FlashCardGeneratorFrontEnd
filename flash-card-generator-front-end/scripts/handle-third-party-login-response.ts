@@ -1,4 +1,4 @@
-import { Client, LoginRequest, RegisterRequest } from "@/models/apiClient";
+import { Client, LoginRequest, RegisterRequest } from "@/lib/apiClient";
 import User from "@/models/User";
 import { JwtPayload, jwtDecode, JwtDecodeOptions } from "jwt-decode";
 

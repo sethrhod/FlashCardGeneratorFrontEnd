@@ -1,4 +1,4 @@
-import { IDeck } from "./apiClient";
+import { IDeck } from "../lib/apiClient";
 
 export interface DecksState {
   Decks: IDeck[];

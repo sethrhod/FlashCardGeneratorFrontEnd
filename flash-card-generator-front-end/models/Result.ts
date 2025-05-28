@@ -1,4 +1,4 @@
-import { IError } from "./apiClient";
+import { IError } from "../lib/apiClient";
 
 type Result<T> = 
   | {success: true; data: T}

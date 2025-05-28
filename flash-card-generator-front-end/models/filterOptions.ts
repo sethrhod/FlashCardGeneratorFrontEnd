@@ -1,4 +1,4 @@
-import { Language, LanguageLevel } from "./apiClient";
+import { Language, LanguageLevel } from "../lib/apiClient";
 
 export default class FilterOptions {
   public LanguageLevel: LanguageLevel | null = null;

@@ -1,7 +1,8 @@
 import { createContext, useContext } from "react";
 import { SidebarState } from "./SidebarState";
-import { Language } from "./apiClient";
+import { Language } from "../lib/apiClient";
 import { DecksState } from "./DecksState";
+import { AvailableLanguagesState } from "./AvailableLanguagesState";
 
 export const SideBarContext = createContext<SidebarState | undefined>(undefined);
 
@@ -13,7 +14,7 @@ export function useSideBarContext() {
   return context;
 }
 
-export const LanguagesContext = createContext<{[key: string] : Language} | undefined>(undefined);
+export const LanguagesContext = createContext<AvailableLanguagesState | undefined>(undefined);
 
 export function useLanguagesContext() {
   const context = useContext(LanguagesContext);
