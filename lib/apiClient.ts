@@ -4,16 +4,19 @@
 // </auto-generated>
 //----------------------
 
+import { AuthorizedHttpClient } from "./AuthorizedHttpClient";
+
 /* tslint:disable */
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-export class Client {
+export class Client extends AuthorizedHttpClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        super();
         this.http = http ? http : window as any;
         this.baseUrl = baseUrl ?? "";
     }
@@ -32,7 +35,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processGetAvailableLanguages(_response);
         });
     }
@@ -69,7 +74,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processGetDecks(_response);
         });
     }
@@ -83,6 +90,13 @@ export class Client {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = DeckIEnumerableResult.fromJS(resultData200);
             return result200;
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
@@ -116,7 +130,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processGetDeckById(_response);
         });
     }
@@ -164,7 +180,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processCreateDeck(_response);
         });
     }
@@ -175,6 +193,13 @@ export class Client {
         if (status === 201) {
             return response.text().then((_responseText) => {
             return;
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
@@ -213,7 +238,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processUpdateDeck(_response);
         });
     }
@@ -227,6 +254,13 @@ export class Client {
             let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result201 = DeckResult.fromJS(resultData201);
             return result201;
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
@@ -260,7 +294,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processDeleteDeck(_response);
         });
     }
@@ -275,6 +311,13 @@ export class Client {
             result204 = BooleanResult.fromJS(resultData204);
             return result204;
             });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
+            });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
             let result404: any = null;
@@ -288,6 +331,64 @@ export class Client {
             });
         }
         return Promise.resolve<BooleanResult>(null as any);
+    }
+
+    /**
+     * @param deckId (optional) 
+     * @return OK
+     */
+    getFlashCardsByDeckId(deckId: string | undefined): Promise<FlashCardIEnumerableResult> {
+        let url_ = this.baseUrl + "/FlashCard/GetFlashCardsByDeckId?";
+        if (deckId === null)
+            throw new Error("The parameter 'deckId' cannot be null.");
+        else if (deckId !== undefined)
+            url_ += "deckId=" + encodeURIComponent("" + deckId) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "text/plain"
+            }
+        };
+
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processGetFlashCardsByDeckId(_response);
+        });
+    }
+
+    protected processGetFlashCardsByDeckId(response: Response): Promise<FlashCardIEnumerableResult> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = FlashCardIEnumerableResult.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 401) {
+            return response.text().then((_responseText) => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("Unauthorized", status, _responseText, _headers, result401);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FlashCardIEnumerableResult>(null as any);
     }
 
     /**
@@ -307,7 +408,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processRegister(_response);
         });
     }
@@ -362,7 +465,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processLogin(_response);
         });
     }
@@ -403,7 +508,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processRefresh(_response);
         });
     }
@@ -452,7 +559,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processMapIdentityApi_confirmEmail(_response);
         });
     }
@@ -489,7 +598,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processResendConfirmationEmail(_response);
         });
     }
@@ -526,7 +637,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processForgotPassword(_response);
         });
     }
@@ -570,7 +683,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processResetPassword(_response);
         });
     }
@@ -615,7 +730,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.process2fa(_response);
         });
     }
@@ -663,7 +780,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processInfoGET(_response);
         });
     }
@@ -715,7 +834,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processInfoPOST(_response);
         });
     }
@@ -749,10 +870,6 @@ export class Client {
         return Promise.resolve<InfoResponse>(null as any);
     }
 
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
     logout(body: any | undefined): Promise<void> {
         let url_ = this.baseUrl + "/logout";
         url_ = url_.replace(/[?&]$/, "");
@@ -767,7 +884,9 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
             return this.processLogout(_response);
         });
     }
@@ -775,9 +894,9 @@ export class Client {
     protected processLogout(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
+        if (status === 401) {
             return response.text().then((_responseText) => {
-            return;
+            return throwException("Unauthorized", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -791,8 +910,8 @@ export class Client {
      * @param body (optional) 
      * @return OK
      */
-    sendGoogleToken(body: string | undefined): Promise<StringResult> {
-        let url_ = this.baseUrl + "/sendGoogleToken";
+    loginOrRegisterUser(body: IdentityUserDto | undefined): Promise<StringResult> {
+        let url_ = this.baseUrl + "/loginOrRegisterUser";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
@@ -806,12 +925,14 @@ export class Client {
             }
         };
 
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processSendGoogleToken(_response);
+        return this.transformOptions(options_).then(transformedOptions_ => {
+            return this.http.fetch(url_, transformedOptions_);
+        }).then((_response: Response) => {
+            return this.processLoginOrRegisterUser(_response);
         });
     }
 
-    protected processSendGoogleToken(response: Response): Promise<StringResult> {
+    protected processLoginOrRegisterUser(response: Response): Promise<StringResult> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -820,6 +941,10 @@ export class Client {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = StringResult.fromJS(resultData200);
             return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            return throwException("Bad Request", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1272,6 +1397,7 @@ export class FlashCard implements IFlashCard {
     level!: LanguageLevel;
     region?: string | undefined;
     pronunciationUri?: string | undefined;
+    deckId!: string | undefined;
 
     constructor(data?: IFlashCard) {
         if (data) {
@@ -1294,6 +1420,7 @@ export class FlashCard implements IFlashCard {
             this.level = _data["level"];
             this.region = _data["region"];
             this.pronunciationUri = _data["pronunciationUri"];
+            this.deckId = _data["deckId"];
         }
     }
 
@@ -1312,6 +1439,7 @@ export class FlashCard implements IFlashCard {
         data["level"] = this.level;
         data["region"] = this.region;
         data["pronunciationUri"] = this.pronunciationUri;
+        data["deckId"] = this.deckId;
         return data;
     }
 }
@@ -1323,6 +1451,107 @@ export interface IFlashCard {
     level: LanguageLevel;
     region?: string | undefined;
     pronunciationUri?: string | undefined;
+    deckId: string | undefined;
+}
+
+export class FlashCardIEnumerableResult implements IFlashCardIEnumerableResult {
+    readonly isFailed?: boolean;
+    readonly isSuccess?: boolean;
+    readonly reasons?: IReason[] | undefined;
+    readonly errors?: IError[] | undefined;
+    readonly successes?: ISuccess[] | undefined;
+    readonly valueOrDefault?: FlashCard[] | undefined;
+    readonly value?: FlashCard[] | undefined;
+
+    constructor(data?: IFlashCardIEnumerableResult) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            (<any>this).isFailed = _data["isFailed"];
+            (<any>this).isSuccess = _data["isSuccess"];
+            if (Array.isArray(_data["reasons"])) {
+                (<any>this).reasons = [] as any;
+                for (let item of _data["reasons"])
+                    (<any>this).reasons!.push(IReason.fromJS(item));
+            }
+            if (Array.isArray(_data["errors"])) {
+                (<any>this).errors = [] as any;
+                for (let item of _data["errors"])
+                    (<any>this).errors!.push(IError.fromJS(item));
+            }
+            if (Array.isArray(_data["successes"])) {
+                (<any>this).successes = [] as any;
+                for (let item of _data["successes"])
+                    (<any>this).successes!.push(ISuccess.fromJS(item));
+            }
+            if (Array.isArray(_data["valueOrDefault"])) {
+                (<any>this).valueOrDefault = [] as any;
+                for (let item of _data["valueOrDefault"])
+                    (<any>this).valueOrDefault!.push(FlashCard.fromJS(item));
+            }
+            if (Array.isArray(_data["value"])) {
+                (<any>this).value = [] as any;
+                for (let item of _data["value"])
+                    (<any>this).value!.push(FlashCard.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): FlashCardIEnumerableResult {
+        data = typeof data === 'object' ? data : {};
+        let result = new FlashCardIEnumerableResult();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["isFailed"] = this.isFailed;
+        data["isSuccess"] = this.isSuccess;
+        if (Array.isArray(this.reasons)) {
+            data["reasons"] = [];
+            for (let item of this.reasons)
+                data["reasons"].push(item ? item.toJSON() : <any>undefined);
+        }
+        if (Array.isArray(this.errors)) {
+            data["errors"] = [];
+            for (let item of this.errors)
+                data["errors"].push(item ? item.toJSON() : <any>undefined);
+        }
+        if (Array.isArray(this.successes)) {
+            data["successes"] = [];
+            for (let item of this.successes)
+                data["successes"].push(item ? item.toJSON() : <any>undefined);
+        }
+        if (Array.isArray(this.valueOrDefault)) {
+            data["valueOrDefault"] = [];
+            for (let item of this.valueOrDefault)
+                data["valueOrDefault"].push(item ? item.toJSON() : <any>undefined);
+        }
+        if (Array.isArray(this.value)) {
+            data["value"] = [];
+            for (let item of this.value)
+                data["value"].push(item ? item.toJSON() : <any>undefined);
+        }
+        return data;
+    }
+}
+
+export interface IFlashCardIEnumerableResult {
+    isFailed?: boolean;
+    isSuccess?: boolean;
+    reasons?: IReason[] | undefined;
+    errors?: IError[] | undefined;
+    successes?: ISuccess[] | undefined;
+    valueOrDefault?: FlashCard[] | undefined;
+    value?: FlashCard[] | undefined;
 }
 
 export class ForgotPasswordRequest implements IForgotPasswordRequest {
@@ -1803,6 +2032,46 @@ export interface IIdentityUser {
     lockoutEnd?: Date | undefined;
     lockoutEnabled?: boolean;
     accessFailedCount?: number;
+}
+
+export class IdentityUserDto implements IIdentityUserDto {
+    userName!: string | undefined;
+    email!: string | undefined;
+
+    constructor(data?: IIdentityUserDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.userName = _data["userName"];
+            this.email = _data["email"];
+        }
+    }
+
+    static fromJS(data: any): IdentityUserDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new IdentityUserDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["userName"] = this.userName;
+        data["email"] = this.email;
+        return data;
+    }
+}
+
+export interface IIdentityUserDto {
+    userName: string | undefined;
+    email: string | undefined;
 }
 
 export class InfoRequest implements IInfoRequest {

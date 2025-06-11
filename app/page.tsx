@@ -1,11 +1,10 @@
-import { Client } from "@/lib/apiClient";
-import handleGetAvailableLanguages from "./actions/handleGetAvailableLanguages";
-import { handleGetDecks } from "./actions/handleGetDecks";
+import { ApiException, Client } from "@/lib/apiClient";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/lib/auth-config";
 import nodeFetch from "node-fetch";
 import UserDecks from "./userDecks";
+import { handleGetDecks } from "@/lib/handleGetDecks";
 
 export default async function Home() {
   // 1) Auth guard
@@ -13,20 +12,22 @@ export default async function Home() {
 
   if (!session) redirect("/login");
 
-  let decks, languages;
-  try {
-    // 2) Server-side fetch
-    const api = new Client("https://localhost:7017", {
-      fetch: nodeFetch as any,
-    });
-    decks = await handleGetDecks(api);
-    languages = await handleGetAvailableLanguages(api);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    redirect("/error");
+  // set the token for the API client
+  if (!session.accessToken) {
+    console.error("No access token found in session");
+    redirect("/login");
   }
 
-  return (
-    <UserDecks decks={decks} languages={languages} />
-  );
+  const api = new Client("https://localhost:7017", {
+    fetch: nodeFetch as any,
+  });
+  api.setToken(session.accessToken);
+
+  const decksResult = await handleGetDecks(api);
+  if (decksResult instanceof ApiException) {
+    console.error("Error fetching decks:", decksResult);
+    return <div>Error fetching decks: {decksResult.message}</div>;
+  }
+
+  return <UserDecks decks={decksResult} />;
 }

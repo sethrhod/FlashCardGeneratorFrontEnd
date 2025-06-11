@@ -1,21 +1,21 @@
 "use client";
-import React, { useActionState, useEffect, useState } from "react";
-import { IDeck, Client, Language } from "../lib/apiClient";
+import React, { useEffect, useState } from "react";
+import { IDeck, Language } from "../lib/apiClient";
 import { useRouter } from "next/navigation";
-import { useDecksContext, useSideBarContext } from "@/models/Contexts";
+import { useSideBarContext } from "@/models/Contexts";
 import DisplayLevel from "@/scripts/language-level-converter";
 import FindLanguageName from "@/scripts/language-name-finder";
 
 interface UserDecksProps {
   decks: IDeck[];
-  languages: { [key: string]: Language };
 }
 
 export default function UserDecks(props: UserDecksProps) {
   const router = useRouter();
   const sidebarContext = useSideBarContext();
-  const deckContext = useDecksContext();
-  const [filteredDecks, setFilteredDecks] = useState<IDeck[] | null>(null);  
+  const [filteredDecks, setFilteredDecks] = useState<IDeck[] | null>(null);
+
+  console.log("UserDecks component mounted");
 
   useEffect(() => {
     sidebarContext.setDeckOptionsVisible(false);
@@ -27,7 +27,7 @@ export default function UserDecks(props: UserDecksProps) {
     if (sidebarContext.filterOptions.Language) {
       setFilteredDecks(
         (filteredDecks || []).concat(
-          deckContext.Decks.filter(
+          props.decks.filter(
             (deck) =>
               deck.targetLanguage ==
               sidebarContext.filterOptions.Language?.enumCode
@@ -41,7 +41,7 @@ export default function UserDecks(props: UserDecksProps) {
     ) {
       setFilteredDecks(
         (filteredDecks || []).concat(
-          deckContext.Decks.filter(
+          props.decks.filter(
             (deck) => deck.level == sidebarContext.filterOptions.LanguageLevel
           )
         )
@@ -56,7 +56,6 @@ export default function UserDecks(props: UserDecksProps) {
   }, [sidebarContext]);
 
   const handleDeckClick = (deck: IDeck) => {
-    deckContext.setSelectedDeck(deck);
     router.push(`/decks/${deck.id}`);
   };
 
@@ -96,11 +95,27 @@ export default function UserDecks(props: UserDecksProps) {
     );
   };
 
+  if (props.decks == null || undefined) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-500">Loading decks...</p>
+      </div>
+    );
+  }
+
+  if (props.decks.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-500">No decks available for this user</p>
+      </div>
+    );
+  }
+
   return (
     <ul className="flex flex-col p-4 bg-gray-900 self-center md:w-1/2 w-full h-screen overflow-y-auto">
       {filteredDecks !== null
         ? filteredDecks.map((deck) => deckItem(deck))
-        : deckContext.Decks.map((deck) => deckItem(deck))}
+        : props.decks.map((deck) => deckItem(deck))}
     </ul>
   );
 }

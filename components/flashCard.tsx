@@ -18,7 +18,7 @@ export default function Card({ card }: CardProps) {
         <p className="text-2xl">{face.text}</p>
         <div className="flex flex-row w-full items-center justify-between">
           <div>
-            <p>{FindLanguageName(face.language.textCode)}</p>
+            <p>{FindLanguageName(face.language)}</p>
             {face.region ?? <p>{face.region}</p>}
           </div>
           <button
@@ -36,12 +36,16 @@ export default function Card({ card }: CardProps) {
     <div className="relative flex flex-col items-center w-[500px] h-[300px]">
       {visibleFace ? (
         <Face
+          key={card.frontView.id}
+          id="frontView"
           text={card.frontView.text}
           language={card.frontView.language}
           region={card.frontView.region}
         />
       ) : (
         <Face
+          key={card.backView.id}
+          id="backView"
           text={card.backView.text}
           language={card.backView.language}
           region={card.backView.region}

@@ -1,14 +1,18 @@
 'use client';
 import Dropdown from "@/components/languagesDropDown";
 import { useLanguagesContext, useSideBarContext } from "@/models/Contexts";
-import React, { useActionState, useEffect, useState } from "react";
+import React, { useActionState, useEffect } from "react";
 import handleGenerationRequestSubmission from "../actions/handleGenerationRequestSubmission";
+import { useSession } from "next-auth/react";
 
 const initialState = {
   message: '',
+  token: '',
 }
 
 export default function Generate() {
+  const session = useSession();
+  initialState.token = session.data?.accessToken || '';
   const [state, formAction, pending] = useActionState(handleGenerationRequestSubmission, initialState);
 
     const languagesContext = useLanguagesContext();
@@ -46,7 +50,7 @@ export default function Generate() {
                     Original Language
                   </label>
                   <Dropdown
-                    languages={languagesContext}
+                    languages={languagesContext.availableLanguages}
                     formName="original-language"
                   />
                 </div>
@@ -55,7 +59,7 @@ export default function Generate() {
                     Target Language
                   </label>
                   <Dropdown
-                    languages={languagesContext}
+                    languages={languagesContext.availableLanguages}
                     formName="target-language"
                   />
                 </div>

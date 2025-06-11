@@ -1,8 +1,6 @@
-
-import DeckOptions from "./DeckOptions";
-import FilterOptions from "./FilterOptions";
+import DeckOptions from "./deckOptions";
+import FilterOptions from "./filterOptions";
 import User from "./User";
-
 
 export interface SidebarState {
   filterOptions: FilterOptions;

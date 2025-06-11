@@ -26,6 +26,7 @@ export default async function handleGenerationRequestSubmission(prevState: any, 
 
   try {
     const api = new Client('https://localhost:7017', { fetch: nodeFetch as any });
+    api.setToken(prevState.token);
     await api.createDeck(generationRequest);
   }
   catch (error) {
